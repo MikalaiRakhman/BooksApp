@@ -30,8 +30,8 @@ namespace BooksApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                book.Id = _bookViewModels.Count > 0 ? _bookViewModels.Max(s => s.Id) + 1 : 1;
                 _bookViewModels.Add(book);
-
                 return RedirectToAction(nameof(Index));
             }
 
