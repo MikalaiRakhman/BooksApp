@@ -1,4 +1,4 @@
-﻿using BooksApp.ViewModel;
+﻿using BooksApp.WEB.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BooksApp.Controllers

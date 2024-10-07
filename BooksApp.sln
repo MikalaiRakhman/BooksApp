@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BooksApp", "BooksApp\BooksApp.csproj", "{3ECF6E65-7E95-4337-841F-A47176E16BFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BooksApp.WEB", "BooksApp\BooksApp.WEB.csproj", "{3ECF6E65-7E95-4337-841F-A47176E16BFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookApp.BLL", "BookApp.BLL\BookApp.BLL.csproj", "{D5B57B3B-4175-48D2-9788-A4D8961A8B5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookApp.Domain", "BookApp.Domain\BookApp.Domain.csproj", "{06F5CB4C-96E9-4F82-805C-62742A6C30AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{3ECF6E65-7E95-4337-841F-A47176E16BFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ECF6E65-7E95-4337-841F-A47176E16BFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ECF6E65-7E95-4337-841F-A47176E16BFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5B57B3B-4175-48D2-9788-A4D8961A8B5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5B57B3B-4175-48D2-9788-A4D8961A8B5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5B57B3B-4175-48D2-9788-A4D8961A8B5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5B57B3B-4175-48D2-9788-A4D8961A8B5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06F5CB4C-96E9-4F82-805C-62742A6C30AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06F5CB4C-96E9-4F82-805C-62742A6C30AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06F5CB4C-96E9-4F82-805C-62742A6C30AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06F5CB4C-96E9-4F82-805C-62742A6C30AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
