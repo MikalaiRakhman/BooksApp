@@ -1,8 +1,9 @@
-﻿using BookApp.Domain.Entity;
+﻿using BookApp.BLL.Interfaces;
+using BookApp.Domain.Entity;
 
 namespace BookApp.BLL.Services
 {
-    public class StubBooksService
+    public class StubBooksService : IBooksService
     {
         private static List<Book> _books =
             [
@@ -11,7 +12,7 @@ namespace BookApp.BLL.Services
             new Book {Id = 3, Name = "The Witcher", Author = "Andrzej Sapkowski", Year = 1990}
             ];
 
-        public IEnumerable<Book> GetAllSkills()
+        public IEnumerable<Book> GetAllBooks()
         {
             return _books;
         }
@@ -37,7 +38,7 @@ namespace BookApp.BLL.Services
             }
         }
 
-        public void UpdateBook(Book book)
+        public void EditBook(Book book)
         {
             var existingBook = GetBookById(book.Id);
 

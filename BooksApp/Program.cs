@@ -1,7 +1,11 @@
+using BookApp.BLL.Interfaces;
+using BookApp.BLL.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IBooksService, StubBooksService>();
 
 var app = builder.Build();
 

@@ -2,12 +2,12 @@
 
 namespace BookApp.BLL.Interfaces
 {
-    internal interface IBooksService
+    public interface IBooksService
     {
-        IEnumerable<Book>? GetAllSkills();
+        IEnumerable<Book>? GetAllBooks();
         Book? GetBookById(int id);
         void AddBook(Book book);
-        void UpdateBook(Book book);
+        void EditBook(Book book);
         void DeleteBook(int id);
     }
 }

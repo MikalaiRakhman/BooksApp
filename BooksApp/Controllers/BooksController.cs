@@ -1,22 +1,31 @@
-﻿using BooksApp.WEB.Models;
+﻿using BookApp.BLL.Interfaces;
+using BooksApp.WEB.Models;
+using BookApp.Domain.Entity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BooksApp.Controllers
 {
     public class BooksController : Controller
     {
-        private static List<BookViewModel> _bookViewModels = 
-            [
-            new BookViewModel {Id = 1, Name = "Johnny Mneminic", Author = "William Gibson", Year = 1981 },
-            new BookViewModel {Id = 2, Name = "Dune", Author = "Frank Herbert", Year = 1963},
-            new BookViewModel {Id = 3, Name = "The Witcher", Author = "Andrzej Sapkowski", Year = 1990}
-            ];
-
+        private readonly IBooksService _booksService;
+        public BooksController(IBooksService booksService)
+        {
+            _booksService = booksService;
+        }
         public IActionResult Index()
         {
-            ViewBag.AnotherTitle = "List of books";       
-            var bookViewModels = _bookViewModels;
+            ViewBag.AnotherTitle = "List of books";
+            
+            var books = _booksService.GetAllBooks();
 
+            var bookViewModels = books.Select(book => new BookViewModel
+            {
+                Id = book.Id,
+                Name = book.Name,
+                Author = book.Author,
+                Year = book.Year
+            }).ToList();
+            
             return View(bookViewModels);
         }
 
@@ -27,11 +36,17 @@ namespace BooksApp.Controllers
 
         [HttpPost]        
         public IActionResult Create([FromForm] BookViewModel book)
-        {
+        {            
             if (ModelState.IsValid)
             {
-                book.Id = _bookViewModels.Count > 0 ? _bookViewModels.Max(s => s.Id) + 1 : 1;
-                _bookViewModels.Add(book);
+                _booksService.AddBook(new Book
+                {
+                    Id = book.Id,
+                    Name = book.Name,
+                    Author = book.Author,
+                    Year = book.Year
+                });
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -40,18 +55,29 @@ namespace BooksApp.Controllers
 
         public IActionResult Edit(int id)
         {
-            var book = _bookViewModels.FirstOrDefault(b => b.Id == id);
+            var book = _booksService.GetBookById(id);
+
             if (book == null)
             {
                 return NotFound();
             }
-            return View(book);
+
+            var bookViewModel = new BookViewModel
+            {
+                Id = book.Id,
+                Name = book.Name,
+                Author = book.Author,
+                Year = book.Year
+            };
+
+            return View(bookViewModel);
         }
 
         [HttpPost]
         public IActionResult Edit(BookViewModel book)
         {
-            var existingBook = _bookViewModels.FirstOrDefault(b => b.Id == book.Id);
+            var existingBook = _booksService.GetBookById(book.Id);
+
             if (existingBook == null)
             {
                 return NotFound();
@@ -61,29 +87,43 @@ namespace BooksApp.Controllers
             existingBook.Author = book.Author;
             existingBook.Year = book.Year;
 
+            _booksService.EditBook(existingBook);
+
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Delete(int id)
         {
-            var book = _bookViewModels.FirstOrDefault(b => b.Id == id);
+            var book = _booksService.GetBookById(id);
+
             if (book == null)
             {
                 return NotFound();
             }
-            return View(book);
+
+            var bookViewModel = new BookViewModel
+            {
+                Id = book.Id,
+                Name = book.Name,
+                Author = book.Author,
+                Year = book.Year
+            };
+
+            return View(bookViewModel);
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            var book = _bookViewModels.FirstOrDefault(b => b.Id == id);
+            var book = _booksService.GetBookById(id);
+
             if (book == null)
             {
                 return NotFound();
             }
 
-            _bookViewModels.Remove(book);
+            _booksService.DeleteBook(book.Id);
+
             return RedirectToAction(nameof(Index));
         }
     }
