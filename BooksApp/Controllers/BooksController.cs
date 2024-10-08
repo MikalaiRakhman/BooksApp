@@ -8,10 +8,12 @@ namespace BooksApp.Controllers
     public class BooksController : Controller
     {
         private readonly IBooksService _booksService;
+
         public BooksController(IBooksService booksService)
         {
             _booksService = booksService;
         }
+
         public IActionResult Index()
         {
             ViewBag.AnotherTitle = "List of books";
