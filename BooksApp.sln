@@ -5,9 +5,11 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BooksApp.WEB", "BooksApp\BooksApp.WEB.csproj", "{3ECF6E65-7E95-4337-841F-A47176E16BFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookApp.BLL", "BookApp.BLL\BookApp.BLL.csproj", "{D5B57B3B-4175-48D2-9788-A4D8961A8B5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookApp.BLL", "BookApp.BLL\BookApp.BLL.csproj", "{D5B57B3B-4175-48D2-9788-A4D8961A8B5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookApp.Domain", "BookApp.Domain\BookApp.Domain.csproj", "{06F5CB4C-96E9-4F82-805C-62742A6C30AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookApp.Domain", "BookApp.Domain\BookApp.Domain.csproj", "{06F5CB4C-96E9-4F82-805C-62742A6C30AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookApp.DAL", "BookApp.DAL\BookApp.DAL.csproj", "{A90135D4-E573-469C-8244-CF224AC8EA8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{06F5CB4C-96E9-4F82-805C-62742A6C30AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06F5CB4C-96E9-4F82-805C-62742A6C30AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06F5CB4C-96E9-4F82-805C-62742A6C30AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A90135D4-E573-469C-8244-CF224AC8EA8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A90135D4-E573-469C-8244-CF224AC8EA8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A90135D4-E573-469C-8244-CF224AC8EA8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A90135D4-E573-469C-8244-CF224AC8EA8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
