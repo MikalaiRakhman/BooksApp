@@ -7,9 +7,9 @@ namespace BookApp.BLL.Services
     {
         private static List<Book> _books =
             [
-            new Book {Id = 1, Name = "Johnny Mneminic", Author = "William Gibson", Year = 1981 },
-            new Book {Id = 2, Name = "Dune", Author = "Frank Herbert", Year = 1963},
-            new Book {Id = 3, Name = "The Witcher", Author = "Andrzej Sapkowski", Year = 1990}
+            new Book {Id = 1, Title = "Johnny Mneminic", Author = "William Gibson", Year = 1981 },
+            new Book {Id = 2, Title = "Dune", Author = "Frank Herbert", Year = 1963},
+            new Book {Id = 3, Title = "The Witcher", Author = "Andrzej Sapkowski", Year = 1990}
             ];
 
         public IEnumerable<Book> GetAllBooks()
@@ -44,7 +44,7 @@ namespace BookApp.BLL.Services
 
             if (existingBook != null)
             {
-                existingBook.Name = book.Name;
+                existingBook.Title = book.Title;
                 existingBook.Author = book.Author;
                 existingBook.Year = book.Year;
             }

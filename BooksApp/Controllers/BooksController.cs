@@ -23,7 +23,7 @@ namespace BooksApp.Controllers
             var bookViewModels = books.Select(book => new BookViewModel
             {
                 Id = book.Id,
-                Name = book.Name,
+                Title = book.Title,
                 Author = book.Author,
                 Year = book.Year
             }).ToList();
@@ -44,7 +44,7 @@ namespace BooksApp.Controllers
                 _booksService.AddBook(new Book
                 {
                     Id = book.Id,
-                    Name = book.Name,
+                    Title = book.Title,
                     Author = book.Author,
                     Year = book.Year
                 });
@@ -67,7 +67,7 @@ namespace BooksApp.Controllers
             var bookViewModel = new BookViewModel
             {
                 Id = book.Id,
-                Name = book.Name,
+                Title = book.Title,
                 Author = book.Author,
                 Year = book.Year
             };
@@ -85,7 +85,7 @@ namespace BooksApp.Controllers
                 return NotFound();
             }
 
-            existingBook.Name = book.Name;
+            existingBook.Title = book.Title;
             existingBook.Author = book.Author;
             existingBook.Year = book.Year;
 
@@ -106,7 +106,7 @@ namespace BooksApp.Controllers
             var bookViewModel = new BookViewModel
             {
                 Id = book.Id,
-                Name = book.Name,
+                Title = book.Title,
                 Author = book.Author,
                 Year = book.Year
             };
