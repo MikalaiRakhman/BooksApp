@@ -22,9 +22,10 @@ namespace BooksApp.Controllers
 
             var bookViewModels = books.Select(book => new BookViewModel
             {
-                Id = book.Id,
+                Id = book.BookId,
                 Title = book.Title,
-                Author = book.Author,
+                AuthorName = book.Author.Name,
+                AuthorSurname = book.Author.Surname,
                 Year = book.Year
             }).ToList();
             
@@ -43,9 +44,9 @@ namespace BooksApp.Controllers
             {
                 _booksService.AddBook(new Book
                 {
-                    Id = book.Id,
+                    BookId = book.Id,
                     Title = book.Title,
-                    Author = book.Author,
+                    Author = new Author { Name = book.AuthorName, Surname = book.AuthorSurname },
                     Year = book.Year
                 });
 
@@ -66,9 +67,10 @@ namespace BooksApp.Controllers
 
             var bookViewModel = new BookViewModel
             {
-                Id = book.Id,
+                Id = book.BookId,
                 Title = book.Title,
-                Author = book.Author,
+                AuthorName = book.Author.Name,
+                AuthorSurname = book.Author.Surname,
                 Year = book.Year
             };
 
@@ -86,7 +88,7 @@ namespace BooksApp.Controllers
             }
 
             existingBook.Title = book.Title;
-            existingBook.Author = book.Author;
+            existingBook.Author = new Author {Name = book.AuthorName, Surname = book.AuthorSurname };
             existingBook.Year = book.Year;
 
             _booksService.EditBook(existingBook);
@@ -105,9 +107,10 @@ namespace BooksApp.Controllers
 
             var bookViewModel = new BookViewModel
             {
-                Id = book.Id,
+                Id = book.BookId,
                 Title = book.Title,
-                Author = book.Author,
+                AuthorName = book.Author.Name,
+                AuthorSurname = book.Author.Surname,
                 Year = book.Year
             };
 
@@ -124,7 +127,7 @@ namespace BooksApp.Controllers
                 return NotFound();
             }
 
-            _booksService.DeleteBook(book.Id);
+            _booksService.DeleteBook(book.BookId);
 
             return RedirectToAction(nameof(Index));
         }

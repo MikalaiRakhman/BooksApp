@@ -20,8 +20,9 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Author</th>
+                <th>Title</th>
+                <th>AuthorName</th>
+                <th>AuthorSurname</th>
                 <th>Year</th>
                 <th>Actions</th>
             </tr>
@@ -31,7 +32,8 @@
             {
                 <tr>
                     <td>@book.Title</td>
-                    <td>@book.Author</td>
+                    <td>@book.AuthorName</td>
+                    <td>@book.AuthorSurname</td>
                     <td>@book.Year</td>
                     <td>
                         <a asp-controller="Books" asp-action="Edit" asp-route-id="@book.Id" class="btn btn-primary">Edit</a>
