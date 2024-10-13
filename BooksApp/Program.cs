@@ -2,6 +2,7 @@ using BookApp.BLL.Interfaces;
 using BookApp.BLL.Services;
 using BookApp.DAL.Data;
 using BookApp.DAL.Repository;
+using BookApp.DAL.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
                 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IBooksRepository, BooksRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBooksService, StubBooksService>();
 
 var app = builder.Build();

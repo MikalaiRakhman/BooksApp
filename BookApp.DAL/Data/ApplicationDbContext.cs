@@ -10,6 +10,23 @@ namespace BookApp.DAL.Data
 
         }
 
-        DbSet<Book> Book { get; set; }
+        DbSet<Book> Books { get; set; }
+        DbSet<Publisher> Publishers { get; set; }
+        DbSet<Genre> Genres { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Book>()
+                .HasOne(b => b.Publisher)
+                .WithMany(p => p.Books)
+                .HasForeignKey(b => b.PublisherId);
+
+            modelBuilder.Entity<Book>()
+                .HasOne(b => b.Genre)
+                .WithMany(g => g.Books)
+                .HasForeignKey(b => b.GenreId);
+        }
     }
 }
