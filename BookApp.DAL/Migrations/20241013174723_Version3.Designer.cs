@@ -3,6 +3,7 @@ using BookApp.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookApp.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241013174723_Version3")]
+    partial class Version3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,26 +56,6 @@ namespace BookApp.DAL.Migrations
                     b.HasIndex("PublisherId");
 
                     b.ToTable("Books");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Author = "J.R.R. Tolkien",
-                            GenreId = 1,
-                            Name = "The Hobbit",
-                            PublisherId = 1,
-                            Year = 1937
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Author = "George Orwell",
-                            GenreId = 2,
-                            Name = "1984",
-                            PublisherId = 2,
-                            Year = 1949
-                        });
                 });
 
             modelBuilder.Entity("BookApp.Domain.Entity.Genre", b =>
@@ -90,18 +73,6 @@ namespace BookApp.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Fantasy"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Science Fiction"
-                        });
                 });
 
             modelBuilder.Entity("BookApp.Domain.Entity.Publisher", b =>
@@ -123,20 +94,6 @@ namespace BookApp.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Publishers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "New York, NY",
-                            Name = "Penguin Random House"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Address = "New York, NY",
-                            Name = "HarperCollins"
-                        });
                 });
 
             modelBuilder.Entity("BookApp.Domain.Entity.Book", b =>
