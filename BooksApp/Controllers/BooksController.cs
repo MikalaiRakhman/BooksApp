@@ -74,7 +74,7 @@ namespace BooksApp.WEB.Controllers
         public async Task<IActionResult> Create()
         {
             ViewData["GenreId"] = new SelectList(await _genreService.GetAllGenresAsync(), "Id", "Name");
-            ViewData["PublisherId"] = new SelectList(await _publisherService.GetAllPublishersAsync(), "Id", "Address");
+            ViewData["PublisherId"] = new SelectList(await _publisherService.GetAllPublishersAsync(), "Id", "Name");
 
             return View();
         }
@@ -119,7 +119,7 @@ namespace BooksApp.WEB.Controllers
             }
 
             ViewData["GenreId"] = new SelectList(await _genreService.GetAllGenresAsync(), "Id", "Name", book.GenreId);
-            ViewData["PublisherId"] = new SelectList(await _publisherService.GetAllPublishersAsync(), "Id", "Address", book.PublisherId);
+            ViewData["PublisherId"] = new SelectList(await _publisherService.GetAllPublishersAsync(), "Id", "Name", book.PublisherId);
 
             return View(book);
         }
