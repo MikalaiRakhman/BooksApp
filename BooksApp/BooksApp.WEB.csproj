@@ -24,8 +24,4 @@
     <ProjectReference Include="..\BookApp.Domain\BookApp.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

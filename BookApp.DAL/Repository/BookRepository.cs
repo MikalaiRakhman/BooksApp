@@ -28,8 +28,10 @@ namespace BookApp.DAL.Repository
                 originalEntity.Name = entity.Name;
                 originalEntity.Author = entity.Author;
                 originalEntity.Year = entity.Year;
-                originalEntity.Publisher = entity.Publisher;
-                originalEntity.Genre = entity.Genre;
+                originalEntity.PublisherId = entity.PublisherId;
+                originalEntity.Publisher = await _context.Publishers.FindAsync(entity.PublisherId);
+                originalEntity.GenreId = entity.GenreId;
+                originalEntity.Genre = await _context.Genres.FindAsync(entity.GenreId);
 
                 await _context.SaveChangesAsync();
             }
