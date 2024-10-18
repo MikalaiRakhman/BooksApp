@@ -15,7 +15,7 @@ namespace BookApp.DAL.Data
         public DbSet<Genre> Genres { get; set; }
   
 
-protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 

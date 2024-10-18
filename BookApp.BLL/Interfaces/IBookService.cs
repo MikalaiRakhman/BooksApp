@@ -8,7 +8,6 @@ namespace BookApp.BLL.Interfaces
         Task<Book> GetBookByIdAsync(int id);
         Task AddBookAsync(Book book);
         Task UpdateBookAsync(Book book);
-        Task DeleteBookAsync(int id);
-        Task<IEnumerable<Book>> GetBooksByAuthorAsync(string author);
+        Task DeleteBookAsync(int id);        
     }
 }

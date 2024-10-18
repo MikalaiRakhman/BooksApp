@@ -1,6 +1,7 @@
 ﻿using BookApp.Domain.Entity;
 using BookApp.DAL.Repository.Interfaces;
 using BookApp.BLL.Interfaces;
+
 namespace BookApp.BLL.Services
 {
     public class BookService : IBookService
@@ -35,11 +36,6 @@ namespace BookApp.BLL.Services
         public async Task DeleteBookAsync(int id)
         {
             await _bookRepository.DeleteAsync(id);
-        }
-
-        public async Task<IEnumerable<Book>> GetBooksByAuthorAsync(string author)
-        {
-            return await _bookRepository.GetBooksByAuthorAsync(author);
         }
     }
 }
