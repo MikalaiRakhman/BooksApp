@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BookApp.Domain.Entity;
 using BookApp.BLL.Interfaces;
-using BooksApp.WEB.Models;
+using FluentValidation;
 
 namespace BooksApp.WEB.Controllers
 {
@@ -9,11 +9,13 @@ namespace BooksApp.WEB.Controllers
     {
         private readonly IGenreService _genreService;
         private readonly IBookService _bookService;
+        private readonly IValidator<Genre> _validator;
 
-        public GenresController(IGenreService genreService, IBookService bookService)
+        public GenresController(IGenreService genreService, IBookService bookService, IValidator<Genre> validator)
         {
             _genreService = genreService;
             _bookService = bookService;
+            _validator = validator;
         }
         
         public async Task<IActionResult> Index()
@@ -27,9 +29,27 @@ namespace BooksApp.WEB.Controllers
         }
               
         [HttpPost]        
-        public async Task<IActionResult> Create(GenreViewModel genre)
+        public async Task<IActionResult> Create(Genre genre)
         {
-            if (ModelState.IsValid)
+            var genreToValidate = new Genre 
+            {
+                Name = genre.Name,
+                Books = new List<Book>()
+            };
+
+            var result = await _validator.ValidateAsync(genreToValidate);
+
+            if (!result.IsValid)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+
+                return View(genre);
+            }
+
+            else
             {                
                 await _genreService.AddGenreAsync(new Genre 
                 {
@@ -38,37 +58,55 @@ namespace BooksApp.WEB.Controllers
                 });
 
                 return RedirectToAction(nameof(Index));
-            }
-
-            return View(genre);
+            }            
         }
         
         public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var genre = await _genreService.GetGenreByIdAsync(id);
-
-            if (genre == null)
-            {
-                return NotFound();
-            }
 
             return View(genre);
         }
                 
         [HttpPost]        
-        public async Task<IActionResult> Edit(int id, GenreViewModel genre)
+        public async Task<IActionResult> Edit(int id, Genre genre)
         {
-            if (id != genre.Id)
+            var booksList = await _bookService.GetAllBooksAsync();
+            var booksWithThisGenreName = booksList.Where(b => b.GenreId == id);            
+
+            var genreToValidate = new Genre();
+
+            if (booksWithThisGenreName == null)
             {
-                return NotFound();
+                genreToValidate = new Genre
+                {
+                    Name = genre.Name,
+                    Books = new List<Book>()
+                };
             }
 
-            if (ModelState.IsValid)
+            else
+            {
+                genreToValidate = new Genre
+                {
+                    Name = genre.Name,
+                    Books = booksWithThisGenreName.ToList()
+                };
+            }            
+
+            var result = await _validator.ValidateAsync(genreToValidate);
+
+            if (!result.IsValid)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+
+                return View(genre);
+            }
+
+            else 
             {
                 var book = await _genreService.GetGenreByIdAsync(id);
 
@@ -83,17 +121,10 @@ namespace BooksApp.WEB.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(genre);
         }
         
         public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var genre = await _genreService.GetGenreByIdAsync(id);
 
             if (genre == null)
