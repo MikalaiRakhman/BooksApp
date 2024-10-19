@@ -21,6 +21,7 @@ builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IValidator<Book>,BookValidator>();
 builder.Services.AddScoped<IValidator<Genre>, GenreValidator>();
+builder.Services.AddScoped<IValidator<Publisher>, PublisherValidator>();
 
 builder.Services.AddControllersWithViews();
 

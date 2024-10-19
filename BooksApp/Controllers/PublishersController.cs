@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using BookApp.DAL.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using BookApp.Domain.Entity;
 using BookApp.BLL.Interfaces;
-using BookApp.WEB.Models;
+using FluentValidation;
 
 namespace BookApp.WEB.Controllers
 {
@@ -16,105 +9,96 @@ namespace BookApp.WEB.Controllers
     {
         private readonly IPublisherService _publisherService;
         private readonly IBookService _bookService;
+        private readonly IValidator<Publisher> _validator;
 
-        public PublishersController(IPublisherService publisherService, IBookService bookService)
+        public PublishersController(IPublisherService publisherService, IBookService bookService, IValidator<Publisher> validator)
         {
            _bookService = bookService;
             _publisherService = publisherService;
+            _validator = validator;
         }
 
-        // GET: Publishers
         public async Task<IActionResult> Index()
         {
             return View(await _publisherService.GetAllPublishersAsync());
         }
 
-        // GET: Publishers/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var publisher = await _publisherService.GetPublisherByIdAsync(id);
-            if (publisher == null)
-            {
-                return NotFound();
-            }
-
+            
             return View(publisher);
         }
 
-        // GET: Publishers/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Publishers/Create
         [HttpPost]        
-        public async Task<IActionResult> Create(PublisherViewModel publisher)
+        public async Task<IActionResult> Create(Publisher publisher)
         {
-            if (ModelState.IsValid)
+            var publisherForValidate = await GetPublisherWithAllPropertyAsync(publisher);
+            var result = await _validator.ValidateAsync(publisherForValidate);
+
+            if (!result.IsValid)
             {
-                await _publisherService.AddPublisherAsync(
-                    new Publisher 
-                    {
-                        Name = publisher.Name,
-                        Address = publisher.Address
-                    });
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+
+                return View(publisher);
+            }
+
+            else                
+            {
+                await _publisherService.AddPublisherAsync(publisherForValidate);               
                 
                 return RedirectToAction(nameof(Index));
-            }
-            return View(publisher);
+            }            
         }
 
-        // GET: Publishers/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var publisher = await _publisherService.GetPublisherByIdAsync(id);
 
-            if (publisher == null)
-            {
-                return NotFound();
-            }
             return View(publisher);
         }
 
         [HttpPost]        
-        public async Task<IActionResult> Edit(int id, PublisherViewModel publisher)
+        public async Task<IActionResult> Edit(int id, Publisher publisher)
         {
-            if (id != publisher.Id)
+            var publisherForValidate = await GetPublisherWithAllPropertyAsync(publisher);
+            var result = await _validator.ValidateAsync(publisherForValidate);
+
+            if (!result.IsValid)
             {
-                return NotFound();
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+
+                return View(publisher);
             }
 
-            if (ModelState.IsValid)
+            else
             {
-                var books = await _bookService.GetAllBooksAsync();
-                var publisherBooks = books.Where(b => b.PublisherId == id).ToList();
+                var books = await _bookService.GetAllBooksAsync();                
 
                 await _publisherService.UpdatePublisherAsync(
-                    new Publisher 
+                    new Publisher
                     {
                         Id = id,
                         Name = publisher.Name,
                         Address = publisher.Address,
-                        Books = publisherBooks
+                        Books = publisherForValidate.Books,
                     });
 
                 return RedirectToAction(nameof(Index));
-            }
-            return View(publisher);
+            }            
         }
 
-        // GET: Publishers/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             if (id == null)
@@ -132,7 +116,6 @@ namespace BookApp.WEB.Controllers
             return View(publisher);
         }
 
-        // POST: Publishers/Delete/5
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -144,6 +127,36 @@ namespace BookApp.WEB.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<Publisher> GetPublisherWithAllPropertyAsync(Publisher publisher)
+        {
+            var booksFromDatabase = await _bookService.GetAllBooksAsync();
+            var thisAuthorBooks = booksFromDatabase.Where(b => b.PublisherId == publisher.Id);
+
+            var publisherForView = new Publisher();
+
+            if (thisAuthorBooks != null) 
+            {
+                publisherForView = new Publisher
+                {
+                    Name = publisher.Name,
+                    Address = publisher.Address,
+                    Books = thisAuthorBooks.ToList(),
+                };
+            }
+
+            else
+            {
+                publisherForView = new Publisher
+                {
+                    Name = publisher.Name,
+                    Address = publisher.Address,
+                    Books = new List<Book>(),
+                };
+            }
+
+            return publisherForView;
         }
     }
 }
