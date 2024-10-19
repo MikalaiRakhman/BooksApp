@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BookApp.Domain.Entity;
 using BookApp.BLL.Interfaces;
-using BooksApp.WEB.Models;
+using FluentValidation;
 
 namespace BooksApp.WEB.Controllers
 {
@@ -11,12 +11,14 @@ namespace BooksApp.WEB.Controllers
         private readonly IBookService _bookService;
         private readonly IGenreService _genreService;
         private readonly IPublisherService _publisherService;
+        private readonly IValidator<Book> _validator;
 
-        public BooksController(IPublisherService publisherService, IGenreService genreService, IBookService bookService)
+        public BooksController(IPublisherService publisherService, IGenreService genreService, IBookService bookService, IValidator<Book> validator)
         {
             _bookService = bookService;
             _publisherService = publisherService;
             _genreService = genreService;
+            _validator = validator;
         }
         
         public async Task<IActionResult> Index()
@@ -26,17 +28,7 @@ namespace BooksApp.WEB.Controllers
 
             foreach (var book in booksFromBooksDatabase)
             {
-                booksToViews.Add(new Book
-                {
-                    Id = book.Id,
-                    Name = book.Name,
-                    Author = book.Author,
-                    Year = book.Year,
-                    PublisherId = book.PublisherId,
-                    Publisher = await _publisherService.GetPublisherByIdAsync(book.PublisherId),
-                    GenreId = book.GenreId,
-                    Genre = await _genreService.GetGenreByIdAsync(book.GenreId),
-                });
+                booksToViews.Add(await GetBookWithAllPropertysAsync(book));
             }
 
             return View(booksToViews);
@@ -50,18 +42,7 @@ namespace BooksApp.WEB.Controllers
             }
 
             var book = await _bookService.GetBookByIdAsync(id);
-
-            var bookToView = new Book 
-            {
-                Id = book.Id,
-                Name = book.Name,
-                Author = book.Author,
-                Year = book.Year,
-                PublisherId = book.PublisherId,
-                Publisher = await _publisherService.GetPublisherByIdAsync(book.PublisherId),
-                GenreId = book.GenreId,
-                Genre = await _genreService.GetGenreByIdAsync(book.GenreId),
-            };
+            var bookToView = GetBookWithAllPropertysAsync(book);
 
             if (book == null)
             {
@@ -80,37 +61,34 @@ namespace BooksApp.WEB.Controllers
         }
    
         [HttpPost]        
-        public async Task<IActionResult> Create([FromForm] BookViewModel book)
+        public async Task<IActionResult> Create(Book book)
         {
-            if (ModelState.IsValid)
+            var bookForValidate = await GetBookWithAllPropertysAsync(book);
+            var result = await _validator.ValidateAsync(bookForValidate);
+
+            if (!result.IsValid)
             {
-                await _bookService.AddBookAsync(new Book
+                foreach (var error in result.Errors)
                 {
-                    Name = book.Name,
-                    Author = book.Author,
-                    Year = book.Year,
-                    PublisherId = book.PublisherId,
-                    Publisher = await _publisherService.GetPublisherByIdAsync(book.PublisherId),
-                    GenreId = book.GenreId,
-                    Genre = await _genreService.GetGenreByIdAsync(book.GenreId),
-                });
-                
-                return RedirectToAction(nameof(Index));
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+
+                ViewData["GenreId"] = new SelectList(await _genreService.GetAllGenresAsync(), "Id", "Name", book.GenreId);
+                ViewData["PublisherId"] = new SelectList(await _publisherService.GetAllPublishersAsync(), "Id", "Address", book.PublisherId);
+
+                return View(book);
             }
 
-            ViewData["GenreId"] = new SelectList(await _genreService.GetAllGenresAsync(), "Id", "Name", book.GenreId);
-            ViewData["PublisherId"] = new SelectList(await _publisherService.GetAllPublishersAsync(), "Id", "Address", book.PublisherId);
+            else
+            {
+                await _bookService.AddBookAsync(bookForValidate);
 
-            return View(book);
+                return RedirectToAction(nameof(Index));
+            }
         }
         
         public async Task<IActionResult> Edit(int id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
+        {            
             var book = await _bookService.GetBookByIdAsync(id);
 
             if (book == null)
@@ -124,46 +102,30 @@ namespace BooksApp.WEB.Controllers
             return View(book);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost]        
         public async Task<IActionResult> Edit(int id, Book book)
         {
-            if (id != book.Id)
-            {
-                return NotFound();
-            }
+            var bookForValidate = await GetBookWithAllPropertysAsync(book);
+            var result = await _validator.ValidateAsync(bookForValidate);
 
-            bool modelIsValid =
-                book.Name != null
-                && book.Name.Length > 0
-                && book.Author != null
-                && book.Author.Length > 0
-                && book.Year != null
-                && book.PublisherId != null
-                && book.GenreId != null;
-
-            if (modelIsValid)
+            if (!result.IsValid)
             {
-                var bookToUpdate = await _bookService.GetBookByIdAsync(id);
-                if (bookToUpdate == null)
+                foreach (var error in result.Errors)
                 {
-                    return NotFound();
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 }
 
-                bookToUpdate.Name = book.Name;
-                bookToUpdate.Author = book.Author;
-                bookToUpdate.Year = book.Year;
-                bookToUpdate.PublisherId = book.PublisherId;
-                bookToUpdate.GenreId = book.GenreId;
+                ViewData["GenreId"] = new SelectList(await _genreService.GetAllGenresAsync(), "Id", "Name", book.GenreId);
+                ViewData["PublisherId"] = new SelectList(await _publisherService.GetAllPublishersAsync(), "Id", "Address", book.PublisherId);
 
-                await _bookService.UpdateBookAsync(bookToUpdate);
-                return RedirectToAction(nameof(Index));
+                return View(book);
             }
 
-            ViewBag.GenreId = new SelectList(await _genreService.GetAllGenresAsync(), "Id", "Name", book.GenreId);
-            ViewBag.PublisherId = new SelectList(await _publisherService.GetAllPublishersAsync(), "Id", "Name", book.PublisherId);
-
-            return View(book);
+            else                    
+            {
+                await _bookService.UpdateBookAsync(bookForValidate);
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -175,6 +137,26 @@ namespace BooksApp.WEB.Controllers
                 return NotFound();
             }
 
+            var bookForView = await GetBookWithAllPropertysAsync(book);
+
+            return View(book);
+        }
+
+        [HttpPost, ActionName("Delete")]        
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var book = await _bookService.GetBookByIdAsync(id);
+
+            if (book != null)
+            {
+                await _bookService.DeleteBookAsync(id);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<Book> GetBookWithAllPropertysAsync(Book book)
+        {
             var bookForView = new Book
             {
                 Id = book.Id,
@@ -187,20 +169,7 @@ namespace BooksApp.WEB.Controllers
                 Genre = await _genreService.GetGenreByIdAsync(book.GenreId),
             };
 
-            return View(book);
-        }
-
-        [HttpPost, ActionName("Delete")]        
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-
-            var book = await _bookService.GetBookByIdAsync(id);
-            if (book != null)
-            {
-                await _bookService.DeleteBookAsync(id);
-            }
-
-            return RedirectToAction(nameof(Index));
+            return bookForView;
         }
     }
 }

@@ -1,18 +1,17 @@
 using BookApp.BLL.Interfaces;
 using BookApp.BLL.Services;
+using BookApp.BLL.Validators;
 using BookApp.DAL.Data;
 using BookApp.DAL.Repository;
 using BookApp.DAL.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using BookApp.Domain.Entity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
                 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
@@ -20,7 +19,10 @@ builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IValidator<Book>,BookValidator>();
+builder.Services.AddScoped<IValidator<Genre>, GenreValidator>();
 
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -33,6 +35,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -40,14 +43,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "publisher",
-    pattern: "publisher/{id}/{*books}",
-    defaults: new { controller = "Publishers", action = "GetPublisher" });
-
-app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Books}/{action=Index}/{id?}");
-
-
 
 app.Run();
