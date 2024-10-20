@@ -154,6 +154,45 @@ namespace BookApp.WEB.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> GetPublisherBooks(string publisherName)
+        {
+            var allPublishers = await _publisherService.GetAllPublishersAsync();
+            var publisherWithName = allPublishers.FirstOrDefault(p => p.Name == publisherName);
+
+            if (publisherWithName != null)
+            {
+                var allBooks = await _bookService.GetAllBooksAsync();
+                var booksOfThisPublisher = allBooks.Where(b => b.PublisherId == publisherWithName.Id).ToList();
+
+                return View(booksOfThisPublisher);
+            }
+
+            else
+            {
+                return Content($"Publisher with name {publisherName} not found");
+            }
+        }
+
+        public async Task<IActionResult> GetBookByNameFromPublisherName (string publisherName, string bookName)
+        {
+            var allPublishers = await _publisherService.GetAllPublishersAsync();
+            var publisherWithName = allPublishers.FirstOrDefault(p => p.Name == publisherName);
+
+            if (publisherWithName != null)
+            {
+                var allBooks = await _bookService.GetAllBooksAsync();
+                var booksOfThisPublisher = allBooks.Where(b => b.PublisherId == publisherWithName.Id);
+                var bookOfThisPublisherWithBookName = booksOfThisPublisher.FirstOrDefault(b => b.Name == bookName);
+
+                return View(bookOfThisPublisherWithBookName);
+            }
+
+            else
+            {
+                return Content($"Book with name {bookName} not found in the publisher {publisherName}");
+            }
+        }
+
         private async Task<Publisher> GetPublisherWithAllPropertyAsync(Publisher publisher)
         {
             var booksFromDatabase = await _bookService.GetAllBooksAsync();
