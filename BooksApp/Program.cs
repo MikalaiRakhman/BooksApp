@@ -6,6 +6,7 @@ using BookApp.DAL.Repository;
 using BookApp.DAL.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
+using Serilog;
 using BookApp.Domain.Entity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,15 @@ builder.Services.AddScoped<IValidator<Genre>, GenreValidator>();
 builder.Services.AddScoped<IValidator<Publisher>, PublisherValidator>();
 
 builder.Services.AddControllersWithViews();
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File($"Logs/log-{DateTime.Now.Day}.txt", (Serilog.Events.LogEventLevel)RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 

@@ -10,23 +10,32 @@ namespace BookApp.WEB.Controllers
         private readonly IPublisherService _publisherService;
         private readonly IBookService _bookService;
         private readonly IValidator<Publisher> _validator;
+        private readonly ILogger<PublishersController> _logger;
 
-        public PublishersController(IPublisherService publisherService, IBookService bookService, IValidator<Publisher> validator)
+        public PublishersController(IPublisherService publisherService, IBookService bookService, IValidator<Publisher> validator, ILogger<PublishersController> logger)
         {
-           _bookService = bookService;
+            _bookService = bookService;
             _publisherService = publisherService;
             _validator = validator;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _publisherService.GetAllPublishersAsync());
+            _logger.LogInformation($"Enter method Task<IActionResult> Details(int id). PublishersController.");
+            _logger.LogInformation($"Exit method Task<IActionResult> Index(). PublishersController.");
+
+            return View(await _publisherService.GetAllPublishersAsync());            
         }
 
         public async Task<IActionResult> Details(int id)
         {
+            _logger.LogInformation($"Enter method Task<IActionResult> Details(int id). PublishersController. ID is {id}");
+
             var publisher = await _publisherService.GetPublisherByIdAsync(id);
-            
+
+            _logger.LogInformation($"Exit method Task<IActionResult> Index(). PublishersController. ID is {id}");
+
             return View(publisher);
         }
 
@@ -38,6 +47,8 @@ namespace BookApp.WEB.Controllers
         [HttpPost]        
         public async Task<IActionResult> Create(Publisher publisher)
         {
+            _logger.LogInformation($"Enter method Task<IActionResult> Details(int id). PublishersController. ID is {publisher.Id}");
+
             var publisherForValidate = await GetPublisherWithAllPropertyAsync(publisher);
             var result = await _validator.ValidateAsync(publisherForValidate);
 
@@ -45,6 +56,8 @@ namespace BookApp.WEB.Controllers
             {
                 foreach (var error in result.Errors)
                 {
+                    _logger.LogError($"Error in the method Task<IActionResult> Create(Publisher publisher). PublisherController. Publisher ID is {publisherForValidate.Id}. Error is {error.PropertyName}, {error.ErrorMessage}");
+
                     ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 }
 
@@ -53,15 +66,22 @@ namespace BookApp.WEB.Controllers
 
             else                
             {
-                await _publisherService.AddPublisherAsync(publisherForValidate);               
-                
+                await _publisherService.AddPublisherAsync(publisherForValidate);
+
+                _logger.LogInformation($"Added new Publisher to database Publishers. PublisherController. Publisher ID is {publisherForValidate.Id}");
+                _logger.LogInformation($"Exit method Task<IActionResult> Index(). PublishersController. ID is {publisherForValidate.Id}");
+
                 return RedirectToAction(nameof(Index));
             }            
         }
 
         public async Task<IActionResult> Edit(int id)
         {
+            _logger.LogInformation($"Enter method Task<IActionResult> Edit(int id). PublishersController. ID is {id}");
+
             var publisher = await _publisherService.GetPublisherByIdAsync(id);
+
+            _logger.LogInformation($"Exit method Task<IActionResult> Edit(int id). PublishersController. ID is {id}");
 
             return View(publisher);
         }
@@ -69,6 +89,8 @@ namespace BookApp.WEB.Controllers
         [HttpPost]        
         public async Task<IActionResult> Edit(int id, Publisher publisher)
         {
+            _logger.LogInformation($"Enter method Task<IActionResult> Edit(int id, Publisher publisher). PublishersController. ID is {id}");
+
             var publisherForValidate = await GetPublisherWithAllPropertyAsync(publisher);
             var result = await _validator.ValidateAsync(publisherForValidate);
 
@@ -76,6 +98,8 @@ namespace BookApp.WEB.Controllers
             {
                 foreach (var error in result.Errors)
                 {
+                    _logger.LogError($"Error in the method Task<IActionResult> Edit(int id, Publisher publisher). PublisherController. Publisher ID is {publisherForValidate.Id}. Error is {error.PropertyName}, {error.ErrorMessage}");
+
                     ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 }
 
@@ -84,8 +108,6 @@ namespace BookApp.WEB.Controllers
 
             else
             {
-                var books = await _bookService.GetAllBooksAsync();                
-
                 await _publisherService.UpdatePublisherAsync(
                     new Publisher
                     {
@@ -95,23 +117,20 @@ namespace BookApp.WEB.Controllers
                         Books = publisherForValidate.Books,
                     });
 
+                _logger.LogInformation($"Updated Publisher. PublisherController. Publisher ID is {publisherForValidate.Id}");
+                _logger.LogInformation($"Exit method Task<IActionResult> Edit(int id, Publisher publisher). PublishersController. ID is {publisherForValidate.Id}");
+
                 return RedirectToAction(nameof(Index));
             }            
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _logger.LogInformation($"Enter method Task<IActionResult> Delete(int id). PublishersController. ID is {id}");
 
             var publisher = await _publisherService.GetPublisherByIdAsync(id);
 
-            if (publisher == null)
-            {
-                return NotFound();
-            }
+            _logger.LogInformation($"Exit method Task<IActionResult> Delete(int id). PublishersController. ID is {id}");
 
             return View(publisher);
         }
@@ -119,12 +138,18 @@ namespace BookApp.WEB.Controllers
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            _logger.LogInformation($"Enter method Task<IActionResult> DeleteConfirmed(int id). PublishersController. ID is {id}");
+
             var publisher = await _publisherService.GetPublisherByIdAsync(id);
 
             if (publisher != null)
             {
+                _logger.LogInformation($"Publisher ID {id} deleted from database Publishers");
+
                 await _publisherService.DeletePublisherAsync(id);
             }
+
+            _logger.LogInformation($"Exit method Task<IActionResult> DeleteConfirmed(int id). PublishersController. ID is {id}");
 
             return RedirectToAction(nameof(Index));
         }
