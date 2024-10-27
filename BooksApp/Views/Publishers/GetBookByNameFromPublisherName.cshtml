@@ -1,0 +1,25 @@
+﻿@model BookApp.Domain.Entity.Book
+
+@{
+    ViewData["Title"] = "Book Details";
+}
+
+<h1>Details for @Model.Name</h1>
+
+@if (Model != null)
+{
+    <div>
+        <h3>@Model.Name</h3>
+        <p><strong>Author:</strong> @Model.Author</p>
+        <p><strong>Year:</strong> @Model.Year</p>
+        <p><strong>Publisher ID:</strong> @Model.PublisherId</p>
+    </div>
+}
+else
+{
+    <p>Book not found.</p>
+}
+
+<div>
+    <a asp-action="Index">Back to Books List</a>
+

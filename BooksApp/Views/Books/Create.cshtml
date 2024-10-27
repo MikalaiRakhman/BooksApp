@@ -1,11 +1,11 @@
-﻿@model BooksApp.WEB.Models.BookViewModel
-
+﻿@model BookApp.Domain.Entity.Book
 @{
     ViewData["Title"] = "Create";
 }
 
+<h1>Create</h1>
 
-<h4>Create new book</h4>
+<h4>Book</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -27,13 +27,23 @@
                 <span asp-validation-for="Year" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="PublisherId" class="control-label"></label>
+                <select asp-for="PublisherId" class ="form-control" asp-items="ViewBag.PublisherId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="GenreId" class="control-label"></label>
+                <select asp-for="GenreId" class ="form-control" asp-items="ViewBag.GenreId"></select>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-            </div>            
+            </div>
         </form>
     </div>
 </div>
 
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

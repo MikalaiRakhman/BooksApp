@@ -1,0 +1,38 @@
+﻿@model List<BookApp.Domain.Entity.Book>
+
+@{
+    ViewData["Title"] = "Books by Publisher";
+}
+
+<h1>Books by Publisher</h1>
+
+@if (Model != null && Model.Any())
+{
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var book in Model)
+            {
+                        <tr>
+                            <td>@book.Name</td>
+                            <td>@book.Author</td>
+                            <td>@book.Year</td>
+                        </tr>
+            }
+            </tbody>
+        </table>
+}
+else
+{
+        <p>No books found for this publisher.</p>
+}
+
+<div>
+    <a asp-action="Index">Back to Publishers List</a>
+</div>

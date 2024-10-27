@@ -1,19 +1,39 @@
 using BookApp.BLL.Interfaces;
 using BookApp.BLL.Services;
+using BookApp.BLL.Validators;
 using BookApp.DAL.Data;
 using BookApp.DAL.Repository;
+using BookApp.DAL.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using Serilog;
+using BookApp.Domain.Entity;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
                 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IBooksRepository, BooksRepository>();
-builder.Services.AddScoped<IBooksService, StubBooksService>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
+builder.Services.AddScoped<IPublisherService, PublisherService>();
+builder.Services.AddScoped<IGenreRepository, GenreRepository>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IValidator<Book>,BookValidator>();
+builder.Services.AddScoped<IValidator<Genre>, GenreValidator>();
+builder.Services.AddScoped<IValidator<Publisher>, PublisherValidator>();
+
+builder.Services.AddControllersWithViews();
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File($"Logs/log-{DateTime.Now.Day}.txt", (Serilog.Events.LogEventLevel)RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 
@@ -26,11 +46,22 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "publisher",
+    pattern: "publisher/{publisherName}/{bookName}",
+    defaults: new { controller = "Publishers", action = "GetPublisherBooks" });
+
+app.MapControllerRoute(
+    name: "publisher",
+    pattern: "publisher/{publisherName}", 
+    defaults: new { controller = "Publishers", action = "GetPublisherBooks" });
 
 app.MapControllerRoute(
     name: "default",
